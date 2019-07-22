@@ -11,7 +11,7 @@ rp.setup(relay, rpgio.DIR_LOW)
   .then(() => {
     setInterval(() =>{
       rp.read(magReader).then(value =>{
-
+        console.log({value})
         rp.write(relay, !!value)
       })
     }, 10)

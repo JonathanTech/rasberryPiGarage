@@ -1,19 +1,47 @@
-let rpgio = require('rpi-gpio')
-let rp = rpgio.promise
+const gpio = require('rpi-gpio')
+const rp = gpio.promise
+const express = require('express')
+const app = express()
 
-let toggle = false
+gpio.on('change', function(channel, value) {
+  console.log('Channel ' + channel + ' value is now ' + value);
+});
 
-const magReader = 11
-const relay = 13
+const magReaderPIN = 11
+const relayPIN = 13
 
-rp.setup(relay, rpgio.DIR_LOW)
-  .then(() => rp.setup(magReader, rpgio.DIR_IN, rpgio.EDGE_BOTH))
+let setupPromises = [
+  rp.setup(relayPIN, gpio.DIR_LOW),
+  rp.setup(magReaderPIN, gpio.DIR_IN),
+]
+
+
+app.get('/doorStatus', function (req, res) {
+  rp.read(magReaderPIN).then(value =>{
+    res.json({doorIsClosed:value})
+  })
+})
+
+const toggleGarageDoor = () => rp.write(magReaderPIN, true)
+  .then(()=>{
+    setTimeout(() =>{
+      rp.write(magReaderPIN, false)
+    }, 50)
+  })
+
+app.post('/hitGarageButton', async (req, res) =>{
+  if(req.password === 'bob') {
+    toggleGarageDoor()
+    res.send('toggled')
+  }
+  else{
+    res.sendStatus(401)
+  }
+})
+
+Promise.all(setupPromises)
   .then(() => {
-    setInterval(() =>{
-      rp.read(magReader).then(value =>{
-        console.log({value})
-        rp.write(relay, !!value)
-      })
-    }, 10)
+    app.listen(3000)
   })
   .catch(err => console.error(err))
+

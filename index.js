@@ -26,10 +26,10 @@ app.get('/doorStatus', function (req, res) {
   })
 })
 
-const toggleGarageDoor = () => rp.write(magReaderPIN, true)
+const toggleGarageDoor = () => rp.write(relayPIN, true)
   .then(()=>{
     setTimeout(() =>{
-      rp.write(magReaderPIN, false)
+      rp.write(relayPIN, false)
     }, 50)
   })
 

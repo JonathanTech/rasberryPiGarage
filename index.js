@@ -46,8 +46,8 @@ app.post('/hitGarageButton', async (req, res) =>{
 
 Promise.all(setupPromises)
   .then(() => {
-    app.listen(3000)
-    console.log('listening on port 3000')
+    app.listen(9224)
+    console.log('listening on port 9224')
   })
   .catch(err => console.error(err))
 

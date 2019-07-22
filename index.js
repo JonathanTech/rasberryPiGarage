@@ -32,6 +32,7 @@ const toggleGarageDoor = () => rp.write(relayPIN, true)
       rp.write(relayPIN, false)
     }, 50)
   })
+  .catch(console.error)
 
 app.post('/hitGarageButton', async (req, res) =>{
   console.log('hitGarageButton hit')
@@ -46,8 +47,8 @@ app.post('/hitGarageButton', async (req, res) =>{
 
 Promise.all(setupPromises)
   .then(() => {
-    app.listen(9224)
-    console.log('listening on port 9224')
+    app.listen(8080)
+    console.log('listening on port 8080')
   })
-  .catch(err => console.error(err))
+  .catch(console.error)
 

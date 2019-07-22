@@ -13,14 +13,15 @@ const relayPIN = 13
 
 let setupPromises = [
   rp.setup(relayPIN, gpio.DIR_LOW),
-  rp.setup(magReaderPIN, gpio.DIR_IN, gpio.EDGE_BOTH),
+  // rp.setup(magReaderPIN, gpio.DIR_IN, gpio.EDGE_BOTH),
+  rp.setup(magReaderPIN, gpio.DIR_IN),
 ]
 // parse application/json
 app.use(bodyParser.json())
 
 app.get('/doorStatus', function (req, res) {
-  console.log('doorStatus hit', {doorIsClosed:value})
   rp.read(magReaderPIN).then(value =>{
+    console.log('doorStatus hit', {doorIsClosed:value})
     res.json({doorIsClosed:value})
   })
 })

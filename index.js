@@ -3,10 +3,28 @@ const rp = gpio.promise
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const config = require('./config.json')
 
-gpio.on('change', function(channel, value) {
-  console.log('Channel ' + channel + ' value is now ' + value);
-});
+const basicAuth = require('express-basic-auth')
+
+const {password} = config
+
+const auth = basicAuth({
+  challenge: true,
+  users: { 'garage': password }
+})
+
+if(password === "UNCONFIGURED"){
+  app.all("*", (req, res) =>{
+    res.status(503)
+      .send("Server not configured. Please setup a password in config.json")
+  })
+}
+
+
+// gpio.on('change', function(channel, value) {
+//   console.log('Channel ' + channel + ' value is now ' + value);
+// });
 
 const magReaderPIN = 11
 const relayPIN = 13
@@ -18,8 +36,8 @@ let setupPromises = [
 ]
 // parse application/json
 app.use(bodyParser.json())
-
-app.get('/doorStatus', function (req, res) {
+app.use(auth, express.static(path.join(__dirname, 'public')))
+app.get(auth, '/doorStatus', function (req, res) {
   rp.read(magReaderPIN).then(value =>{
     console.log('doorStatus hit', {doorIsClosed:value})
     res.json({doorIsClosed:value})
@@ -30,15 +48,18 @@ const toggleGarageDoor = () => rp.write(relayPIN, true)
   .then(()=>{
     setTimeout(() =>{
       rp.write(relayPIN, false)
-    }, 50)
+    }, 500)
   })
   .catch(console.error)
-
+app.post(auth, '/trigger', (req, res) => {
+  toggleGarageDoor()
+  res.send('toggled')
+})
 app.post('/hitGarageButton', async (req, res) =>{
   console.log('hitGarageButton hit')
-  if(req.body.password === 'bob') {
+  if(req.body.password === password) {
     toggleGarageDoor()
-    res.send('toggled')
+    res.sendStatus(200)
   }
   else{
     res.sendStatus(401)

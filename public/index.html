@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Welcome to Your Garage!</title>
+    <meta name="description" content="Garage door opener">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header>
+    <h1>
+        Open the garage
+    </h1>
+</header>
+
+<main>
+    <banner id="doorStatus"></banner>
+    <button id="trigger">
+        <img src="/btn.jpg" alt="button"/>
+    </button>
+</main>
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+
+<script>
+  $("#trigger").click(function(){
+    $.post('/trigger',{})
+  });
+  function checkDoorStatus(){
+    $.get('/doorStatus')
+      .then(body =>{
+        if(body.doorIsClosed){
+          $("#doorStatus").text('Door is closed')
+            .addClass('closed')
+        } else{
+          $("#doorStatus").text('Door is open')
+            .removeClass('closed')
+        }
+      })
+  }
+  setInterval(checkDoorStatus, 2000)
+</script>
+</body>
+</html>

@@ -38,7 +38,7 @@ let setupPromises = [
 // parse application/json
 app.use(bodyParser.json())
 app.use(auth, express.static(path.join(__dirname, 'public')))
-app.get(auth, '/doorStatus', function (req, res) {
+app.get('/doorStatus', auth, function (req, res) {
   rp.read(magReaderPIN).then(value =>{
     console.log('doorStatus hit', {doorIsClosed:value})
     res.json({doorIsClosed:value})
@@ -52,7 +52,7 @@ const toggleGarageDoor = () => rp.write(relayPIN, true)
     }, 500)
   })
   .catch(console.error)
-app.post(auth, '/trigger', (req, res) => {
+app.post('/trigger', auth, (req, res) => {
   toggleGarageDoor()
   res.send('toggled')
 })

@@ -40,7 +40,7 @@ app.use(bodyParser.json())
 
 app.get('/doorStatus', auth, function (req, res) {
   rp.read(magReaderPIN).then(value =>{
-    console.log('doorStatus hit', {doorIsClosed:value})
+    // console.log('doorStatus hit', {doorIsClosed:value})
     res.json({doorIsClosed:value})
   })
 })

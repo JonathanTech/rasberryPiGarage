@@ -37,7 +37,7 @@ let setupPromises = [
 ]
 // parse application/json
 app.use(bodyParser.json())
-app.use(auth, express.static(path.join(__dirname, 'public')))
+
 app.get('/doorStatus', auth, function (req, res) {
   rp.read(magReaderPIN).then(value =>{
     console.log('doorStatus hit', {doorIsClosed:value})
@@ -66,6 +66,8 @@ app.post('/hitGarageButton', async (req, res) =>{
     res.sendStatus(401)
   }
 })
+
+app.use(auth, express.static(path.join(__dirname, 'public')))
 
 Promise.all(setupPromises)
   .then(() => {

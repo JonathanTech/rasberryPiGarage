@@ -29,11 +29,13 @@ if(password === "UNCONFIGURED"){
 
 const magReaderPIN = 11
 const relayPIN = 13
+const powerPins = config.powerPins || []
 
 let setupPromises = [
   rp.setup(relayPIN, gpio.DIR_LOW),
   // rp.setup(magReaderPIN, gpio.DIR_IN, gpio.EDGE_BOTH),
   rp.setup(magReaderPIN, gpio.DIR_IN),
+  powerPins.map(pin => rp.setup(pin, gpio.DIR_HIGH)) //additional power pins (needed for jon's setup)
 ]
 // parse application/json
 app.use(bodyParser.json())
